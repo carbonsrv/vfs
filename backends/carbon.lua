@@ -6,5 +6,6 @@ end
 
 -- Load all of them!
 vfs.loadbackends("carbon.physfs")
-vfs.loadbackends("carbon.gofs")
+-- vfs.loadbackends("carbon.gofs") -- not used
 vfs.loadbackends("carbon.shared")
+vfs.loadbackends("carbon.sql")

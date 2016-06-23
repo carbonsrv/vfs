@@ -152,12 +152,21 @@ end
 -- if the path is not in the form of "drive:whatever", use the default drive.
 
 -- call vfs.default_drive with"root" or whatever drive you want the default.
-local default_drive_key = "carbon:vfs:default_drive"
-function vfs.set_default_drive(drivename)
-	kvstore._set(default_drive_key, drivename)
-end
-function vfs.default_drive()
-	return kvstore._get(default_drive_key)
+if carbon then
+	local default_drive_key = "carbon:vfs:default_drive"
+	function vfs.set_default_drive(drivename)
+		kvstore._set(default_drive_key, drivename)
+	end
+	function vfs.default_drive()
+		return kvstore._get(default_drive_key)
+	end
+else
+	function vfs.set_default_drive(drivename)
+		vfs._default_drive = drivename
+	end
+	function vfs.default_drive()
+		return vfs._default_drive
+	end
 end
 
 local function parse_path(path, default)

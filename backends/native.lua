@@ -48,6 +48,10 @@ return {
 			rename = function(loc1, loc2)
 				return os.rename(getpath(loc1), getpath(loc2))
 			end,
+
+			-- generic functions
+			chdir = function(loc) cwd = abspath(loc, cwd) return cwd end,
+			getcwd = function(loc) return cwd end,
 		}
 
 		-- Mostly carbon specific additions.
