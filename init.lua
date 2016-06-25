@@ -240,6 +240,70 @@ function vfs.writer(dst)
 	end
 end
 
+-- A package.loader for all your vfs-y needs.
+-- Call vfs.searchpath("mydrive:/lualibs/?.lua;mydrive:/lualibs/?/init.lua") to set your search path and what not.
+
+if carbon then
+	function vfs.searchpath(new)
+		if new then
+			kvstore._set("carbon:vfs:searchpath", new)
+		else
+			return kvstore._get("carbon:vfs:searchpath")
+		end
+	end
+else
+	function vfs.searchpath(new)
+		if new then
+			vfs._searchpath = new
+		else
+			return vfs._searchpath
+		end
+	end
+end
+
+-- carbon cache vars
+local carbon_do_cache_prefix = "carbon:do_cache:"
+local carbon_dont_cache_vfs = "carbon:dont_cache:vfs"
+local carbon_cache_prefix = "carbon:lua_module:bc:"
+local carbon_cache_prefix_loc = "carbon:lua_module:loc:"
+
+-- Actual loader
+function vfs.loader(name)
+	local sp = vfs.searchpath()
+	if not sp then
+		return "\n\tno vfs searchpath set"
+	end
+
+	local estr = ""
+	local modname = tostring(name):gsub("%.", "/")
+
+	-- iterate over the split things in the searchpath, replacing the ? with the modname
+	local entries = string.split(sp, ";")
+	for ne=1, #entries do
+		local e = entries[ne]
+		local fp = string.gsub(e, "%?", modname)
+
+		-- read file and load it if it is found
+		local drive, path = parse_path(fp)
+		local src = call_backend(drive, "read", path)
+		if src then -- found
+			local f, err = loadstring(src, fp)
+			if err then error(err, 0) end
+			if carbon then -- carbon has an integrated cache for loading libs and stuff.
+				if kvstore._get(carbon_do_cache..modname) ~= false and kvstore._get(carbon_dont_cache_vfs) ~= true then
+					kvstore._set(carbon_cache_prefix..modname, string.dump(f))
+					kvstore._set(carbon_cache_prefix_loc..modname, fp)
+				end
+			end
+			return f
+		end
+
+		-- append error message if not found
+		estr = estr .. "\n\tno file in vfs under "..fp
+	end
+	return estr
+end
+
 -- Generic function addition
 -- Magic!
 
@@ -252,7 +316,6 @@ setmetatable(vfs, {__index=function(tbl, name)
 		return call_backend(drive, name, ...)
 	end
 end})
-
 
 -- End
 return vfs
