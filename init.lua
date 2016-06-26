@@ -290,7 +290,7 @@ function vfs.loader(name)
 			local f, err = loadstring(src, fp)
 			if err then error(err, 0) end
 			if carbon then -- carbon has an integrated cache for loading libs and stuff.
-				if kvstore._get(carbon_do_cache..modname) ~= false and kvstore._get(carbon_dont_cache_vfs) ~= true then
+				if kvstore._get(carbon_do_cache_prefix..modname) ~= false and kvstore._get(carbon_dont_cache_vfs) ~= true then
 					kvstore._set(carbon_cache_prefix..modname, string.dump(f))
 					kvstore._set(carbon_cache_prefix_loc..modname, fp)
 				end
