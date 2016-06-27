@@ -59,13 +59,12 @@ local function abspath(rel, base)
 	local relpath = strsplt(rel, "/")
 	for i=0, #relpath do
 		local elm = relpath[i]
-		if elm == "." then -- ignore
-		elseif elm == ".." then -- step back
+		if elm == ".." then -- step back
 			if pathn > 0 then
 				path[pathn] = nil
 				pathn = pathn - 1
 			end
-		elseif elm ~= nil and elm ~= "" then
+		elseif elm ~= nil and elm ~= "" and elm ~= "." then
 			pathn = pathn + 1
 			path[pathn] = elm
 		end
@@ -183,8 +182,8 @@ vfs.parse_path = parse_path
 function vfs.copy(fpsrc, fpdst)
 	local fpsrc_drivename, fpsrc_path = parse_path(fpsrc)
 	local fpdst_drivename, fpdst_path = parse_path(fpdst)
-	local fpsrc_drive = vfs.drives[fpsrc]
-	local fpdst_drive = vfs.drives[fpdst]
+	local fpsrc_drive = vfs.drives[fpsrc_drivename]
+	local fpdst_drive = vfs.drives[fpdst_drivename]
 	local fpsrc_backend = vfs.backends[fpsrc_drive]
 	local fpdst_backend = vfs.backends[fpdst_drive]
 
@@ -217,8 +216,8 @@ function vfs.reader(src)
 
 	-- A quite dirty hack, just for programs which definitly want a LTN12 reader, but the backend doesn't have one.
 	-- Probably not that efficient.
-	local src = src_drive.read(src_path)
-	return ltn12.source.string(src)
+	local str = src_drive.read(src_path)
+	return ltn12.source.string(str)
 end
 
 function vfs.writer(dst)
@@ -280,8 +279,8 @@ function vfs.loader(name)
 	-- iterate over the split things in the searchpath, replacing the ? with the modname
 	local entries = string.split(sp, ";")
 	for ne=1, #entries do
-		local e = entries[ne]
-		local fp = string.gsub(e, "%?", modname)
+		local entry = entries[ne]
+		local fp = string.gsub(entry, "%?", modname)
 
 		-- read file and load it if it is found
 		local drive, path = parse_path(fp)
@@ -307,7 +306,7 @@ end
 -- Generic function addition
 -- Magic!
 
-setmetatable(vfs, {__index=function(tbl, name)
+setmetatable(vfs, {__index=function(_, name)
 	return function(filepath, ...)
 		local drive, path = parse_path(filepath)
 		if path then

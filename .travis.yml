@@ -1,0 +1,36 @@
+language: python
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - libphysfs-dev
+
+env:
+  - LUA="lua=5.1"
+  - LUA="lua=5.2"
+  - LUA="lua=5.3"
+  - LUA="luajit=2.0"
+  - LUA="luajit=2.1"
+  - LUA="luajit=2.0" CARBON="YES"
+  - LUA="luajit=2.1" CARBON="YES"
+
+before_install:
+  - pip install hererocks
+  - hererocks lua_install -r^ --$LUA
+  - export PATH="$PATH:$PWD/lua_install/bin"
+  - export LD_LIBRARY_PATH="$PWD/lua_install/lib:/usr/lib:/lib"
+
+install:
+  - [ "$CARBON" -eq "YES" ] && luarocks install luacheck
+  - luarocks install busted
+  - luarocks install luacov
+  - luarocks install luacov-coveralls
+  - [ "$CARBON" -eq "YES" ] && curl $(curl http://wtfits.science/latest-carbon) > lua_install/bin/lua && chmod +x lua_install/bin/lua
+
+script:
+  - [ "$CARBON" -eq "YES" ] && luacheck --std _G+busted *.lua spec
+  - busted --verbose --coverage spec
+
+after_success:
+  - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
