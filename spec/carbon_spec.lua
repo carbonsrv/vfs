@@ -27,9 +27,16 @@ end
 local function basicvfstest(drive)
 	local eq = function(a, b)
 		if type(assert) == "function" then
-			assert(a == b)
+			assert(a == b, "Expected "..tostring(a).." to be equal to "..tostring(b))
 		else
 			assert.equals(a, b)
+		end
+	end
+	local neq = function(a, b)
+		if type(assert) == "function" then
+			assert(a ~= b, "Expected "..tostring(a).." to not be equal to "..tostring(b))
+		else
+			assert.are_not.equals(a, b)
 		end
 	end
 
@@ -39,11 +46,19 @@ local function basicvfstest(drive)
 	local str = assert(vfs.read(drive..":/test.txt"))
 	eq(str, teststr)
 
+	local exists = assert(vfs.exists(drive..":/test.txt"))
+	eq(exists, true)
+
 	local size = assert(vfs.size(drive..":/test.txt"))
 	eq(size, #teststr)
 
 	local list = assert(vfs.list(drive..":/"))
 	eq(list[1], "test.txt")
+
+	assert(vfs.delete(drive..":/test.txt"))
+
+	exists, err = vfs.exists(drive..":/test.txt")
+	neq(exists, true)
 end
 
 -- Actual tests

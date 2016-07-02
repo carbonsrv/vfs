@@ -67,9 +67,12 @@ return {
 			return db:exec("DELETE FROM "..tablename.." WHERE dirpath "..sqlop_equals.." "..esc(), (dirpath or "/"))
 		end
 		local function deleteany(dirpath, filename)
+			dirpath = dirpath or "/"
 			local _, err = delete(dirpath..filename)
-			if err then return nil, err end
-			return delete(dirpath, filename)
+			if err then return false, err end
+			_, err = delete(dirpath, filename)
+			if err then return false, err end
+			return true
 		end
 		local function add(dirpath, filename, content)
 			escn = 1
@@ -119,9 +122,13 @@ return {
 						return false, err
 					end
 
-					return rows.n == 0
+					if not rows then
+						return false, nil
+					end
+
+					return rows.n >= 1, nil
 				end
-				return nil, "Failed splitting path!"
+				return false, "Failed splitting path!"
 			end,
 			read = function(loc)
 				local dirpath, filename = splitpath(getpath(loc))
