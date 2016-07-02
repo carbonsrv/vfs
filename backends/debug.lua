@@ -11,7 +11,7 @@ return {
 			mkdir = function(loc) print("mkdir at "..abspath(loc)) return true end,
 			delete = function(loc) print("delete at "..abspath(loc, cwd)) return true end,
 			list = function(loc) print("list at "..abspath(loc, cwd)) return {} end,
-			chdir = function(loc) print("cwd is now "..abspath(loc, cwd)) cwd = abspath(loc, cwd) return cwd end,
+			chdir = function(loc) print("cwd is now "..vfs.abspath(loc, cwd)) cwd = vfs.abspath(loc, cwd) return cwd end,
 			getcwd = function() print("getcwd (is "..cwd..")") return cwd end,
 		}
 	end

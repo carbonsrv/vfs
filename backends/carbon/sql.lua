@@ -94,7 +94,7 @@ return {
 			mkdir = function() return true end,
 
 			-- generic functions
-			chdir = function(loc) cwd = abspath(loc, cwd) return cwd end,
+			chdir = function(loc) cwd = vfs.abspath(loc, cwd) return cwd end,
 			getcwd = function(loc) return cwd end,
 
 			-- Real things
