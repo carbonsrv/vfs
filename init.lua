@@ -203,7 +203,7 @@ function vfs.copy(fpsrc, fpdst)
 
 	-- fallback
 	local src = fpsrc_drive.read(fpsrc_path)
-	return fpdst.write(fpdst_path, src)
+	return fpdst_drive.write(fpdst_path, src)
 end
 
 function vfs.reader(src)
