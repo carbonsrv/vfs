@@ -277,29 +277,32 @@ function vfs.loader(name)
 	local modname = tostring(name):gsub("%.", "/")
 
 	-- iterate over the split things in the searchpath, replacing the ? with the modname
-	local entries = string.split(sp, ";")
+	local entries = string.split(string.gsub(sp, "%?", modname), ";")
 	for ne=1, #entries do
-		local entry = entries[ne]
-		local fp = string.gsub(entry, "%?", modname)
+		local fp = entries[ne]
 
 		-- read file and load it if it is found
 		local drive, path = parse_path(fp)
-		local src = call_backend(drive, "read", path)
-		if src then -- found
-			local f, err = loadstring(src, fp)
-			if err then error(err, 0) end
-			if carbon then -- carbon has an integrated cache for loading libs and stuff.
-				if kvstore._get(carbon_do_cache_prefix..modname) ~= false and kvstore._get(carbon_dont_cache_vfs) ~= true then
-					kvstore._set(carbon_cache_prefix..modname, string.dump(f))
-					kvstore._set(carbon_cache_prefix_loc..modname, fp)
+		if vfs.drives[drive] then
+			local src = call_backend(drive, "read", path)
+			if src then -- found
+				local f, err = loadstring(src, fp)
+				if err then error(err, 0) end
+				if carbon then -- carbon has an integrated cache for loading libs and stuff.
+					if kvstore._get(carbon_do_cache_prefix..modname) ~= false and kvstore._get(carbon_dont_cache_vfs) ~= true then
+						kvstore._set(carbon_cache_prefix..modname, string.dump(f))
+						kvstore._set(carbon_cache_prefix_loc..modname, fp)
+					end
 				end
+				return f
+			else
+				estr = estr .. "\n\tno file in vfs under "..fp
 			end
-			return f
+		else
+			estr = estr .. "\n\tno vfs drive named "..drive
 		end
-
-		-- append error message if not found
-		estr = estr .. "\n\tno file in vfs under "..fp
 	end
+
 	return estr
 end
 
