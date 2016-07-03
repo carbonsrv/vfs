@@ -42,22 +42,26 @@ local function basicvfstest(drive)
 
 	local teststr = "Hello World!"
 
-	assert(vfs.write(drive..":/test.txt", teststr))
-	local str = assert(vfs.read(drive..":/test.txt"))
+	local fdir = drive..":/path/to"
+	local fp = fdir.."/test.txt"
+
+	assert(vfs.mkdir(fdir))
+	assert(vfs.write(fp, teststr))
+	local str = assert(vfs.read(fp))
 	eq(str, teststr)
 
-	local exists = assert(vfs.exists(drive..":/test.txt"))
+	local exists = assert(vfs.exists(fp))
 	eq(exists, true)
 
-	local size = assert(vfs.size(drive..":/test.txt"))
+	local size = assert(vfs.size(fp))
 	eq(size, #teststr)
 
-	local list = assert(vfs.list(drive..":/"))
+	local list = assert(vfs.list(fdir))
 	eq(list[1], "test.txt")
 
-	assert(vfs.delete(drive..":/test.txt"))
+	assert(vfs.delete(fp))
 
-	exists, err = vfs.exists(drive..":/test.txt")
+	exists, err = vfs.exists(fp)
 	neq(exists, true)
 end
 

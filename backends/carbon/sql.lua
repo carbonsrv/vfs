@@ -162,6 +162,22 @@ return {
 				end
 				return nil, "Failed splitting path!"
 			end,
+			modtime = function(loc)
+				local dirpath, filename = splitpath(getpath(loc))
+				if filename then
+					local rows, err = query(dirpath, filename)
+					if err then
+						return nil, err
+					end
+
+					local row = rows[1]
+					if row then -- found file
+						return row.modtime. nil
+					end
+					return nil, "No such file"
+				end
+				return nil, "Failed splitting path!"
+			end,
 			delete = function(loc)
 				local dirpath, filename = splitpath(getpath(loc))
 				if filename then
