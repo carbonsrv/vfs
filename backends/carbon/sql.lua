@@ -172,7 +172,7 @@ return {
 
 					local row = rows[1]
 					if row then -- found file
-						return row.modtime. nil
+						return row.modtime, nil
 					end
 					return nil, "No such file"
 				end
