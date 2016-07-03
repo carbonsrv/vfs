@@ -1,7 +1,7 @@
 -- Carbon SQL database backend.
 
 local function splitpath(path) -- returns dirpath, filename
-	local dirpath, filename = string.match(path, "^(.?)/(.-)$")
+	local dirpath, filename = string.match(path, "^(.*)/(.-)$")
 	if dirpath == "" then
 		dirpath = nil
 	end
