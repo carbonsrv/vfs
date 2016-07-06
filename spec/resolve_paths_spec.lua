@@ -6,6 +6,8 @@ describe("carbonvfs", function()
 		pathpairs[{"/test", "is/tasty"}] = "/test/is/tasty"
 		pathpairs[{"/a/path", "../very/complicated/../amazing/path"}] = "/a/very/amazing/path"
 		pathpairs[{"/irrelevant", "/noodles"}] = "/noodles"
+		pathpairs[{"/samedir", "."}] = "/samedir"
+		pathpairs[{"/samedir", ""}] = "/samedir"
 
 		for pair, expected in pairs(pathpairs) do 
 			it(pair[1] .. " and " .. pair[2], function()

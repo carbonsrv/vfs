@@ -1,15 +1,3 @@
--- Custom type check, doesn't work. :V
---[[
-local say = require("say")
--- Type checker
-local function is_type(obj, t)
-	return type(obj) == t
-end
-say:set("assertion.type.positive", "Expected %s to be type %s")
-say:set("assertion.type.negative", "Expected %s to not be type %s")
-assert:register("assertion", "type", is_type, "assertion.is_type.postitive", "assertion.is_type.negative")
---]]
-
 local function loadvfs()
 	package.loaders[1] = function(modname)
 		local fh, err = io.open("./"..modname:gsub("%.", "/")..".lua", "r")
@@ -34,9 +22,7 @@ local eq = function(a, b)
 end
 local neq = function( a, b)
 	if type(assert) == "function" then
-		it("- "..op, function()
-			assert(a ~= b, "Expected "..tostring(a).." to not be equal to "..tostring(b))
-		end)
+		assert(a ~= b, "Expected "..tostring(a).." to not be equal to "..tostring(b))
 	else
 		assert.are_not.equals(a, b)
 	end
@@ -64,7 +50,7 @@ local function basicvfstest(drive)
 		assert(vfs.write(fp, teststr))
 	end)
 
-	tst("read", function()	
+	tst("read", function()
 		local str = assert(vfs.read(fp))
 		eq(str, teststr)
 	end)

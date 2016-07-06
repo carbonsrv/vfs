@@ -1,0 +1,8 @@
+describe("carbonvfs", function()
+	local vfs = dofile("init.lua")
+	it("should error if one tries to initialize a drive with an undefined backend", function()
+		assert.has_error(function()
+			vfs.new("bla", "nosuchbackend")
+		end)
+	end)
+end)
