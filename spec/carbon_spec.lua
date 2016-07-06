@@ -24,45 +24,74 @@ local function loadvfs()
 	return vfs
 end
 
-local function basicvfstest(drive)
-	local eq = function(a, b)
-		if type(assert) == "function" then
-			assert(a == b, "Expected "..tostring(a).." to be equal to "..tostring(b))
-		else
-			assert.equals(a, b)
-		end
+-- comparison helpers
+local eq = function(a, b)
+	if type(assert) == "function" then
+		assert(a == b, "Expected "..tostring(a).." to be equal to "..tostring(b))
+	else
+		assert.equals(a, b)
 	end
-	local neq = function(a, b)
-		if type(assert) == "function" then
+end
+local neq = function( a, b)
+	if type(assert) == "function" then
+		it("- "..op, function()
 			assert(a ~= b, "Expected "..tostring(a).." to not be equal to "..tostring(b))
-		else
-			assert.are_not.equals(a, b)
-		end
+		end)
+	else
+		assert.are_not.equals(a, b)
 	end
+end
 
+-- another helper
+local function tst(desc, fn)
+	if it ~= nil then
+		return it("- "..desc, fn)
+	end
+	return fn()
+end
+
+local function basicvfstest(drive)
 	local teststr = "Hello World!"
 
 	local fdir = drive..":/path/to"
 	local fp = fdir.."/test.txt"
 
-	assert(vfs.mkdir(fdir))
-	assert(vfs.write(fp, teststr))
-	local str = assert(vfs.read(fp))
-	eq(str, teststr)
+	tst("mkdir", function()
+		assert(vfs.mkdir(fdir))
+	end)
 
-	local exists = assert(vfs.exists(fp))
-	eq(exists, true)
+	tst("write", function()
+		assert(vfs.write(fp, teststr))
+	end)
 
-	local size = assert(vfs.size(fp))
-	eq(size, #teststr)
+	tst("read", function()	
+		local str = assert(vfs.read(fp))
+		eq(str, teststr)
+	end)
 
-	local list = assert(vfs.list(fdir))
-	eq(list[1], "test.txt")
+	tst("exists", function()
+		local exists = assert(vfs.exists(fp))
+		eq(exists, true)
+	end)
 
-	assert(vfs.delete(fp))
+	tst("size", function()
+		local size = assert(vfs.size(fp))
+		eq(size, #teststr)
+	end)
 
-	exists, err = vfs.exists(fp)
-	neq(exists, true)
+	tst("list", function()
+		local list = assert(vfs.list(fdir))
+		eq(list[1], "test.txt")
+	end)
+
+	tst("delete", function()
+		assert(vfs.delete(fp))
+	end)
+
+	tst("exists", function()
+		exists, err = vfs.exists(fp)
+		neq(exists, true)
+	end)
 end
 
 -- Actual tests
@@ -76,7 +105,7 @@ describe("carbonvfs", function()
 				assert.equals(type(vfs.backends.shared), "function")
 			end)
 			describe("should be able to use the sql backend", function()
-				it("normally", function()
+				describe("normally", function()
 					local db = assert(sql.open("ql-mem", "sqltest"))
 					vfs.new("sqltest", "sql", db, {
 						tablename = "files",
@@ -84,9 +113,9 @@ describe("carbonvfs", function()
 
 					basicvfstest("sqltest")
 
-					db:close()
 				end)
-				it("using the shared backend", function()
+
+				describe("using the shared backend", function()
 					local db = assert(sql.open("ql-mem", "sqltestshared"))
 					vfs.new("sqlsharedtest", "shared", "sql", db, {
 						tablename = "files",
@@ -102,7 +131,6 @@ describe("carbonvfs", function()
 					end)
 
 					waiter()
-					db:close()
 				end)
 			end)
 		else
