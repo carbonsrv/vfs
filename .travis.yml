@@ -29,7 +29,7 @@ install:
   - luarocks install luacov-coveralls
 
 script:
-  - busted --lua=${LUABIN:-lua}--verbose --coverage spec
+  - busted --lua=${LUABIN:-lua} --verbose --coverage spec
 
 after_success:
   - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
