@@ -12,8 +12,8 @@ env:
   - LUA="lua=5.3"
   - LUA="luajit=2.0"
   - LUA="luajit=2.1"
-  - LUA="luajit=2.0" CARBON="YES"
-  - LUA="luajit=2.1" CARBON="YES"
+  - LUA="luajit=2.0" CARBON="YES" LUABIN="carbon"
+  - LUA="luajit=2.1" CARBON="YES" LUABIN="carbon"
 
 before_install:
   - pip install hererocks
@@ -29,7 +29,7 @@ install:
   - luarocks install luacov-coveralls
 
 script:
-  - busted --verbose --coverage spec
+  - busted --lua=${LUABIN:-lua}--verbose --coverage spec
 
 after_success:
   - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
