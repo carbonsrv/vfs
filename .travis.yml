@@ -23,6 +23,7 @@ before_install:
   - ./scripts/travis-carbon-setup.sh $CARBON
 
 install:
+  - luarocks install luasocket
   - luarocks install busted
   - luarocks install luacov
   - luarocks install luacov-coveralls
