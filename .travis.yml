@@ -20,16 +20,14 @@ before_install:
   - hererocks lua_install -r^ --$LUA
   - export PATH="$PATH:$PWD/lua_install/bin"
   - export LD_LIBRARY_PATH="$PWD/lua_install/lib:/usr/lib:/lib"
-  - [ "$CARBON" -eq "YES" ] && curl $(curl http://wtfits.science/latest-carbon) > lua_install/bin/lua && chmod +x lua_install/bin/lua
+  - ./scripts/travis-carbon-setup.sh $CARBON
 
 install:
-  - [ "$CARBON" -eq "YES" ] && luarocks install luacheck
   - luarocks install busted
   - luarocks install luacov
   - luarocks install luacov-coveralls
 
 script:
-  - [ "$CARBON" -eq "YES" ] && luacheck --std _G+busted *.lua spec
   - busted --verbose --coverage spec
 
 after_success:
