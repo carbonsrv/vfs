@@ -38,6 +38,7 @@ return {
 			reader = function(loc)
 				local i = 1
 				local fp = getdir(loc)
+				physfs.needfile(fp)
 				return function()
 					local chunk, err = physfs.readn(fp, ltn12.BLOCKSIZE)
 					if err or chunk == "" then
