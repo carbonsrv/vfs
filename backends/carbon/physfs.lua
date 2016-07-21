@@ -37,10 +37,11 @@ return {
 			read = function(loc) return physfs.readfile(getdir(loc)) end,
 			reader = function(loc)
 				local i = 1
+				local fp = getdir(loc)
 				return function()
-					local chunk, err = physfs.readat(getdir(loc), i, ltn12.BLOCKSIZE)
-					i = i + ltn12.BLOCKSIZE
+					local chunk, err = physfs.readn(fp, ltn12.BLOCKSIZE)
 					if err or chunk == "" then
+						physfs.close(fp)
 						return nil
 					end
 					return chunk, i
