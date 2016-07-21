@@ -98,11 +98,6 @@ return {
 				return io.size(getpath(loc))
 			end
 		end
-		if os.mkdir then
-			drv.mkdir = function(loc)
-				return os.mkdir(getpath(loc))
-			end
-		end
 		if os.removeall then
 			drv.delete = function(loc)
 				return os.removeall(getpath(loc))
