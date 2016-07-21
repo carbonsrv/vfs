@@ -23,6 +23,23 @@ return {
 			reader = function(loc)
 				return ltn12.source.file(io.open(getpath(loc)))
 			end,
+			exists = function(loc)
+				local fh, err = io.open(getpath(loc), "r")
+				if err then
+					return false
+				end
+				fh:close()
+				return true
+			end,
+			size = function(loc)
+				local fh, err = io.open(getpath(loc), "r")
+				if err then
+					return nil, err
+				end
+				local size = fh:seek("end")
+				fh:close()
+				return size
+			end,
 			write = function(loc, txt)
 				local fh, err = io.open(getpath(loc), "w")
 				if err then
@@ -81,8 +98,24 @@ return {
 				return io.size(getpath(loc))
 			end
 		end
+		if os.mkdir then
+			drv.mkdir = function(loc)
+				return os.mkdir(getpath(loc))
+			end
+		end
+		if os.removeall then
+			drv.delete = function(loc)
+				return os.removeall(getpath(loc))
+			end
+		end
+		if os.mkdir then
+			drv.mkdir = function(loc)
+				local err = os.mkdir(getpath(loc))
+				if err then return false, err end
+				return true
+			end
+		end
 
 		return drv
 	end
-
 }

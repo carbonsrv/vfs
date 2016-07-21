@@ -45,15 +45,22 @@ local function is_relative(path)
 	return string.sub(path, 1, 1) ~= "/" -- that's probably not the best...
 end
 
+local function cleanpath(path)
+	if string.sub(path, -1) == "/" then
+		path = string.sub(path, 1, -2)
+	end
+	return string.gsub(path, "//", "/")
+end
+
 local function abspath(rel, base)
 	if string.sub(rel, 1, 1) == "/" then -- just in case rel is actually absolute
-		return rel
+		return cleanpath(rel)
 	end
 	if rel == "" or rel == "." then
-		return base -- didn't change path
+		return cleanpath(base) -- didn't change path
 	end
 
-	base = string.gsub(base, "^/", "")
+	base = string.gsub(base, "^/+", "")
 	local path = strsplt(base, "/")
 	local pathn = #path
 	local relpath = strsplt(rel, "/")
@@ -141,8 +148,11 @@ function vfs.new(drivename, backend, ...)
 end
 
 function vfs.unmount(drivename)
-	if vfs.drives[drivename] then
-		vfs.drives[drivename].unmount()
+	local drive = vfs.drives[drivename]
+	if drive then
+		if drive.unmount then
+			drive.unmount()
+		end
 		vfs.drives[drivename] = nil
 	end
 end

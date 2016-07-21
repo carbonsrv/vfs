@@ -39,7 +39,7 @@ end
 local function basicvfstest(drive)
 	local teststr = "Hello World!"
 
-	local fdir = drive..":/path/to"
+	local fdir = drive..":/path_to"
 	local fp = fdir.."/test.txt"
 
 	tst("mkdir", function()
@@ -67,7 +67,13 @@ local function basicvfstest(drive)
 
 	tst("list", function()
 		local list = assert(vfs.list(fdir))
-		eq(list[1], "test.txt")
+		local found = false
+		for _, file in pairs(list) do
+			if file == "test.txt" then
+				found = true
+			end
+		end
+		eq(found, true)
 	end)
 
 	tst("delete", function()
@@ -90,6 +96,7 @@ describe("carbonvfs", function()
 				assert.equals(type(vfs.backends.sql), "function")
 				assert.equals(type(vfs.backends.shared), "function")
 			end)
+
 			describe("should be able to use the sql backend", function()
 				describe("normally", function()
 					local db = assert(sql.open("ql-mem", "sqltest"))

@@ -57,7 +57,7 @@ return {
 			getcwd = function(loc) return cwd end,
 
 		-- deinit function
-			unmount = function() if not ismounted then physfs.unmount(base) end end,
+			unmount = function() if not ismounted then return physfs.umount(base) end end,
 		}
 	end,
 }
