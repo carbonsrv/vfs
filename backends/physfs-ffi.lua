@@ -245,7 +245,7 @@ return {
 					return chunk, i
 				end
 			end,
-		
+
 			list = function(loc)
 				local l = ffi.C.PHYSFS_enumerateFiles(getdir(loc))
 
@@ -259,7 +259,7 @@ return {
 				C.PHYSFS_freeList(l)
 				return t
 			end,
-			
+
 			modtime = function(loc)
 				local fp = physfs_open(getdir(loc), "r")
 				return tonumber(C.PHYSFS_getLastModTime(fp))
