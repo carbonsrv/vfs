@@ -47,9 +47,9 @@ end
 
 local function cleanpath(path)
 	if string.sub(path, -1) == "/" then
-		path = string.sub(path, 1, -2)
+		path = string.gsub(path, "^/+", "/")
 	end
-	return string.gsub(path, "//", "/")
+	return string.gsub(path, "//+", "/")
 end
 
 local function abspath(rel, base)
