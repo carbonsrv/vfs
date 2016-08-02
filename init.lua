@@ -146,6 +146,7 @@ function vfs.new(drivename, backend, ...)
 	end
 	e("No such backend: "..backend)
 end
+vfs.mount = vfs.new
 
 function vfs.unmount(drivename)
 	local drive = vfs.drives[drivename]
@@ -287,7 +288,7 @@ function vfs.loader(name)
 	local modname = tostring(name):gsub("%.", "/")
 
 	-- iterate over the split things in the searchpath, replacing the ? with the modname
-	local entries = string.split(string.gsub(sp, "%?", modname), ";")
+	local entries = strsplit(string.gsub(sp, "%?", modname), ";")
 	for ne=1, #entries do
 		local fp = entries[ne]
 
