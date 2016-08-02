@@ -93,6 +93,11 @@ return {
 				return io.isDir(getpath(loc))
 			end
 		end
+		if fs and fs.is_dir then
+			drv.isdir = function(loc)
+				return fs.is_dir(getpath(loc))
+			end
+		end
 		if io.size then
 			drv.size = function(loc)
 				return io.size(getpath(loc))

@@ -1,5 +1,5 @@
 local function loadvfs()
-	package.loaders[1] = function(modname)
+	table.insert(package.loaders, 1, function(modname)
 		local fh, err = io.open("./"..modname:gsub("%.", "/")..".lua", "r")
 		if err then
 			return "\n\tnot found using temp loader"
@@ -7,7 +7,7 @@ local function loadvfs()
 		local src = fh:read("*all")
 		fh:close()
 		return load(src)
-	end
+	end)
 	vfs = dofile("init.lua")
 	return vfs
 end

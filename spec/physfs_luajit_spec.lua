@@ -45,9 +45,8 @@ local function basicvfstest(drive)
 	
 	tst("list", function()
 		local found = false
-		local list = assert(vfs.list(fp))
+		local list = assert(vfs.list(fdir))
 		for k, v in pairs(list) do
-			print(k, v)
 			if v == "testfile" then
 				found = true
 			end
@@ -63,7 +62,6 @@ if jit then
 		vfs.loadbackends("physfs-ffi")
 		describe("should be able to use the ffi physfs backend on luajit", function()
 			vfs.new("physfstest", "physfs", ".")
-			for k,v in pairs(vfs.drives)do print(k,v)end
 			basicvfstest("physfstest")
 		end) 
 	end)
