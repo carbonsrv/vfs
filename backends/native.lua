@@ -85,7 +85,15 @@ return {
 		end
 		if fs and fs.list then
 			drv.list = function(loc)
-				return fs.list(getpath(loc))
+				local res = {}
+				local tmplist = fs.list(getpath(loc))
+				for k, v in pairs(tmplist) do
+					if type(v) == "string" then
+						res[k] = v
+					elseif type(v) == "table" then
+						res[k] = v.name
+					end
+				end
 			end
 		end
 		if io.modtime then
