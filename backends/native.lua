@@ -83,6 +83,11 @@ return {
 				return io.list(getpath(loc))
 			end
 		end
+		if fs and fs.list then
+			drv.list = function(loc)
+				return fs.list(getpath(loc))
+			end
+		end
 		if io.modtime then
 			drv.modtime = function(loc)
 				return io.modtime(getpath(loc))
