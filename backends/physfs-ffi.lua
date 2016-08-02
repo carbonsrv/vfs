@@ -236,7 +236,7 @@ return {
 				local fp = getdir(loc)
 				local f = physfs_open(fp, "r")
 				return function()
-					local chunk, err = fp:readat(fp, i, ltn12.BLOCKSIZE)
+					local chunk, err = f:readat(i, ltn12.BLOCKSIZE)
 					if err or chunk == "" then
 						fp:close()
 						return nil
