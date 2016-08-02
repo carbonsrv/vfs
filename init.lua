@@ -11,7 +11,7 @@ ltn12 = ltn12 or require("ltn12")
 vfs.helpers = {}
 
 -- from http://lua-users.org/wiki/SplitJoin
-local function strsplt(self, sSeparator, nMax, bRegexp)
+local function strsplit(self, sSeparator, nMax, bRegexp)
 	assert(sSeparator ~= '')
 	assert(nMax == nil or nMax >= 1)
 
@@ -61,9 +61,9 @@ local function abspath(rel, base)
 	end
 
 	base = string.gsub(base, "^/+", "")
-	local path = strsplt(base, "/")
+	local path = strsplit(base, "/")
 	local pathn = #path
-	local relpath = strsplt(rel, "/")
+	local relpath = strsplit(rel, "/")
 	for i=0, #relpath do
 		local elm = relpath[i]
 		if elm == ".." then -- step back
